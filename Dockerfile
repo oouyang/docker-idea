@@ -3,6 +3,14 @@ FROM quay.io/alaska/xfce:latest
 ENV IDEA_URL https://download-cf.jetbrains.com/idea/ideaIU-2016.3.tar.gz
 ENV IDEA_SH /usr/lib/idea-IU-163.7743.44/bin/idea.sh 
 ENV IDEA_TGZ /tmp/idea.tgz
+
+RUN apk add --update --no-cache wget git python htop tmux openssh-client musl && \
+    wget -O $IDEA_TGZ $IDEA_URL && \
+    tar xvfz "$IDEA_TGZ" -C /usr/lib && \
+    ln -s "$IDEA_SH" /usr/bin/idea && \
+    rm -rf "$IDEA_TGZ" && \
+    echo "sh -c \"sleep 5 && $IDEA_SH \"" >> /etc/xdg/xfce4/xinitrc
+
 ENV ALPINE_GLIBC_BASE_URL "https://github.com/sgerrand/alpine-pkg-glibc/releases/download" 
 ENV ALPINE_GLIBC_PACKAGE_VERSION "2.23-r3" 
 ENV ALPINE_GLIBC_BASE_PACKAGE_FILENAME "glibc-$ALPINE_GLIBC_PACKAGE_VERSION.apk" 
@@ -10,14 +18,7 @@ ENV ALPINE_GLIBC_BIN_PACKAGE_FILENAME "glibc-bin-$ALPINE_GLIBC_PACKAGE_VERSION.a
 ENV ALPINE_GLIBC_I18N_PACKAGE_FILENAME "glibc-i18n-$ALPINE_GLIBC_PACKAGE_VERSION.apk" 
 ENV LANG=C.UTF-8
 
-RUN apk update && apk add wget git python htop tmux openssh-client  && \
-    \
-    tar xvfz "$IDEA_TGZ" -C /usr/lib && \
-    ln -s "$IDEA_SH" /usr/bin/idea && \
-    rm -rf "$IDEA_TGZ" && \
-    echo "sh -c \"sleep 5 && $IDEA_SH \"" >> /etc/xdg/xfce4/xinitrc
-
-RUN apk add --no-cache --virtual=.build-dependencies wget ca-certificates && \
+RUN apk add --no-cache --virtual=.build-dependencies ca-certificates && \
     wget \
         "https://raw.githubusercontent.com/andyshinn/alpine-pkg-glibc/master/sgerrand.rsa.pub" \
         -O "/etc/apk/keys/sgerrand.rsa.pub" && \
@@ -45,4 +46,3 @@ RUN apk add --no-cache --virtual=.build-dependencies wget ca-certificates && \
 CMD startxfce4
 
 #    && sed -i "s/\ -e\ / /g" "$IDEA_SH" \
-#     apk del .build-dependencies && \
