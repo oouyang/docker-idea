@@ -15,6 +15,7 @@ RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases
     wget -O $IDEA_TGZ $IDEA_URL && \
     tar xvfz "$IDEA_TGZ" -C /usr/lib && \
     ln -s "$IDEA_SH" /usr/bin/idea && \
+    sed -i "s/\ -e\ / /g" "$IDEA_SH" && \
     echo "sh -c \"sleep 5 && $IDEA_SH \"" >> /etc/xdg/xfce4/xinitrc && \
     wget \
         "https://raw.githubusercontent.com/andyshinn/alpine-pkg-glibc/master/sgerrand.rsa.pub" \
@@ -43,4 +44,3 @@ RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases
 
 CMD startxfce4
 
-#    && sed -i "s/\ -e\ / /g" "$IDEA_SH" \
